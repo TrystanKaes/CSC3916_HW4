@@ -115,10 +115,10 @@ router.route('/movies/:movieId')
                     .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
-                        if (movie && movie.length() > 0) {
+                        if (movie && movie.length > 0) {
                             return res.status(200).json({ success: true, result: movie });
                         }else{
-                            return res.status(403).json({ success: false, message: "Movie not found." });
+                            return res.status(400).json({ success: false, message: "Movie not found." });
                         }
                     });
             }else{
