@@ -109,8 +109,9 @@ router.route('/movies/:movieId')
             res.status(403).json({ success: false, message: "Empty query." });
         }else{
             if (req.query.reviews === "true") {
+                var id = req.params.movieId;
                 Movie.aggregate()
-                    .match({_id: mongoose.Types.ObjectId(req.params.movieId)})
+                    .match(mongoose.Types.ObjectId(id))
                     .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
