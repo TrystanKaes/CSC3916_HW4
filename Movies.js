@@ -5,7 +5,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(process.env.DB, { useNewUrlParser: true } );
+mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true  } );
 mongoose.set('useCreateIndex', true);
 
 // Movie schema
