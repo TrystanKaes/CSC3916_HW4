@@ -279,9 +279,9 @@ router.route('/reviews')
             });
         });
     })
-router.route('/', function(req, res) {
-    res.status(405).send("That path doesn't exist for a server.");
-});
+// router.route('/', function(req, res) {
+//     res.status(405).send("That path doesn't exist for a server.");
+// });
 router.all('*', function(req, res) {
     res.status(405).send({success: false, msg: 'Method Not Allowed'});
 });
