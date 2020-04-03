@@ -18,6 +18,13 @@ var ReviewSchema = new Schema({
 
 });
 
+ReviewSchema.index({
+    movie_id: 1,
+    user_id: 1,
+}, {
+    unique: true,
+});
+
 ReviewSchema.pre('save', function(next) {
     next();
 });
