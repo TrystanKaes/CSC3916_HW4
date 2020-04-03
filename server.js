@@ -124,7 +124,7 @@ router.route('/movies/:movieId')
                 var id = req.params.movieId;
                 Movie.findById(id).select("title year genre actors").exec(function(err, movie) {
                     if (err) res.send(err);
-                    if (movie && movie.length > 0) {
+                    if (movie) {
                         return res.status(200).json({ success: true, result: movie });
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
