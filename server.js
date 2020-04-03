@@ -4,6 +4,7 @@ var passport = require('passport');
 var authJwtController = require('./auth_jwt');
 var User = require('./Users');
 var Movie = require('./Movies');
+var Review = require('./Reviews');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
 
@@ -16,33 +17,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 var router = express.Router();
-
-
-function getJSONObject(req, _msg, status) {
-    var json = {
-        headers : "No Headers",
-        status: status,
-        env: process.env.UNIQUE_KEY,
-        body : "No Body",
-        msg : "No Message",
-        query : "No query"
-    };
-
-    if (req.body != null) {
-        json.body = req.body;
-    }
-    if (req.headers != null) {
-        json.headers = req.headers;
-    }
-    if (req.query != null) {
-        json.query = req.query;
-    }
-    json.msg = _msg
-
-    return json;
-}
-
-
 
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
@@ -128,14 +102,57 @@ router.post('/signin', function(req, res) {
     }
 });
 
+router.route('/movies/:movieId')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (!req.body) {
+            res.status(403).json({ success: false, message: "Empty query." });
+        }else{
+            if (req.query.reviews === "true") {
+                Movie.aggregate()
+                    .match({_id: mongoose.Types.ObjectId(req.params.movieId)})
+                    .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
+                    .exec(function (err, movie) {
+                        if (err) return res.send(err);
+                        if (movie) {
+                            return res.status(200).json({ success: true, result: movie });
+                        }else{
+                            return res.status(403).json({ success: false, message: "Movie not found." });
+                        }
+                    });
+            }else{
+                Movie.find(req.params.movieId).select("title year genre actors").exec(function(err, movie) {
+                    if (err) res.send(err);
+                    if (movie && movie.length > 0) {
+                        return res.status(200).json({ success: true, result: movie });
+                    }else{
+                        return res.status(400).json({ success: false, message: "Movie not found." });
+                    }
+                });
+            }
+        }
+    })
 
 router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movies) {
-            if (err) res.send(err);
-            // return the users
-            res.json(movies).status(200).end();
-        });
+        if (req.query.reviews === "true") {
+            Movie.aggregate()
+                .match(req.body)
+                .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
+                .exec(function (err, movie) {
+                    if (err) return res.send(err);
+                    if (movie && movie.length > 0) {
+                        return res.status(200).json({ success: true, result: movie });
+                    }else{
+                        return res.status(400).json({ success: false, message: "Movie not found." });
+                    }
+                });
+        }else{
+            Movie.find(function (err, movies) {
+                if (err) res.send(err);
+                // return the users
+                res.json(movies).status(200).end();
+            });
+        }
     })
     .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors) {
@@ -228,6 +245,47 @@ router.route('/movies')
         }
     )
 
+router.route('/reviews')
+    .post(authJwtController.isAuthenticated, function(req, res) {
+        if (!req.body || !req.body.movieId || !req.body.quote || !req.body.rating)
+            return res.json({success: false, message: 'Please pass MovieId, quote, and rating'}).status(400);
+        Movie.findById(req.body.movieId, function(err, movie) {
+            if (err) return res.status(400).json(err);
+            if (!movie || movie.length <= 0)
+                return res.status(400).json({ success: false, message: "Movie not found" });
+
+            var review = new Review();
+            review.quote = req.body.quote;
+            review.rating = req.body.rating;
+            review.movie_id = movie._id;
+            console.log(req.headers.authorization.substring(4));
+            jwt.verify(req.headers.authorization.substring(4), process.env.SECRET_KEY, function(err, dec) {
+                if (err) return res.status(403).json(err);
+                review.user_id = dec.id;
+                review.username = dec.username;
+                review.save(function(err) {
+                    if (err) {
+                        if (err.code === 11000) {
+                            return res.status(403).json({
+                                success: false, message: 'You have already posted a review.'
+                            });
+                        }
+                        else {
+                            return res.status(403).send(err);
+                        }
+                    }
+                    res.status(200).send({ success: true, message: "Added review." });
+                });
+            });
+        });
+    })
+    .all(function (req, res) {
+        console.log(req.body);
+        res.status(403).json({
+            success: false,
+            message: "Invalid operation. Only POST requests are allowed on reviews."
+        })
+    });
 
 router.all('*', function(req, res) {
     res.status(405).send({success: false, msg: 'Method Not Allowed'});
