@@ -121,7 +121,7 @@ router.route('/movies/:movieId')
                         }
                     });
             }else{
-                Movie.find(req.params.movieId).select("title year genre actors").exec(function(err, movie) {
+                Movie.find(mongoose.Types.ObjectId(req.params.movieId)).select("title year genre actors").exec(function(err, movie) {
                     if (err) res.send(err);
                     if (movie && movie.length > 0) {
                         return res.status(200).json({ success: true, result: movie });
