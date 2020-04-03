@@ -52,7 +52,7 @@ router.route('/users')
     });
 
 router.post('/signup', function(req, res) {
-    console.log(req.json().body)
+    console.log(req.body)
     if (!req.body.username || !req.body.password) {
         res.json({success: false, message: 'Please pass username and password.'});
     }
