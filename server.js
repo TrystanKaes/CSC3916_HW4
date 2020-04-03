@@ -6,6 +6,7 @@ var User = require('./Users');
 var Movie = require('./Movies');
 var Review = require('./Reviews');
 var jwt = require('jsonwebtoken');
+var mongoose = require('mongoose');
 var cors = require('cors');
 
 var app = express();
@@ -111,7 +112,7 @@ router.route('/movies/:movieId')
             if (req.query.reviews === "true") {
                 var id = req.params.movieId;
                 Movie.aggregate()
-                    .match({_id: id})
+                    .match({_id: mongoose.Types.ObjectId(id)})
                     .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
