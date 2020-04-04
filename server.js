@@ -7,6 +7,7 @@ var Movie = require('./Movies');
 var Review = require('./Reviews');
 var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
+var rp = require('request-promise');
 var cors = require('cors');
 
 var app = express();
