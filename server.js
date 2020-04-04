@@ -153,14 +153,14 @@ router.route('/movies/:movieId')
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
                         if (movie && movie.length > 0) {
-                            trackDimension(movie.genre, '/movies/:movieId?reviews=true', 'GET Movie', '1', movie.title, '1')
-                                .then(function (response) {
-                                    console.log(response.body);
-                                })
                             return res.status(200).json({ success: true, result: movie });
                         }else{
                             return res.status(400).json({ success: false, message: "Movie not found." });
                         }
+                        trackDimension(movie.genre, '/movies/:movieId?reviews=true', 'GET Movie', '1', movie.title, '1')
+                            .then(function (response) {
+                                console.log(response.body);
+                            })
                     });
 
             }else{
@@ -168,14 +168,14 @@ router.route('/movies/:movieId')
                 Movie.findById(id).select("title year genre actors").exec(function(err, movie) {
                     if (err) res.send(err);
                     if (movie) {
-                        trackDimension(movie.genre, '/movies/:movieId', 'GET Movie', '1', movie.title, '1')
-                            .then(function (response) {
-                                console.log(response.body);
-                            })
                         return res.status(200).json({ success: true, result: movie });
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
+                    trackDimension(movie.genre, '/movies/:movieId', 'GET Movie', '1', movie.title, '1')
+                        .then(function (response) {
+                            console.log(response.body);
+                        })
                 });
 
             }
@@ -191,26 +191,25 @@ router.route('/movies')
                 .exec(function (err, movie) {
                     if (err) return res.send(err);
                     if (movie && movie.length > 0) {
-                        trackDimension("ALL", '/movies/?reviews=true', 'GET Movies', '1', "ALL MOVIES", '1')
-                            .then(function (response) {
-                                console.log(response.body);
-                            })
                         return res.status(200).json({ success: true, result: movie });
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
+                    trackDimension("ALL", '/movies/?reviews=true', 'GET Movies', '1', "ALL MOVIES", '1')
+                        .then(function (response) {
+                            console.log(response.body);
+                        })
                 });
         }else{
             Movie.find(function (err, movies) {
                 if (err) res.send(err);
-                trackDimension("ALL", '/movies', 'GET Movies', '1', "ALL MOVIES", '1')
-                    .then(function (response) {
-                        console.log(response.body);
-                    })
                 // return the users
                 res.json(movies).status(200).end();
             });
-
+            trackDimension("ALL", '/movies', 'GET Movies', '1', "ALL MOVIES", '1')
+                .then(function (response) {
+                    console.log(response.body);
+                })
         }
     })
     .post(authJwtController.isAuthenticated, function(req, res) {
