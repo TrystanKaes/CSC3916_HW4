@@ -45,7 +45,7 @@ function trackDimension(category, action, label, value, dimension, metric) {
                 // Event label.
                 el: label,
                 // Event value.
-                ev: value,
+                ev: 1,
                 // Custom Dimension
                 cd1: dimension,
                 // Custom Metric
