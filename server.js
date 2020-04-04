@@ -8,6 +8,7 @@ var Review = require('./Reviews');
 var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
 var rp = require('request-promise');
+const crypto = require("crypto");
 var cors = require('cors');
 
 var app = express();
