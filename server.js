@@ -19,6 +19,41 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
+const GA_TRACKING_ID = process.env.GA_KEY;
+
+function trackDimension(category, action, label, value, dimension, metric) {
+
+    var options = { method: 'GET',
+        url: 'https://www.google-analytics.com/collect',
+        qs:
+            {   // API Version.
+                v: '1',
+                // Tracking ID / Property ID.
+                tid: GA_TRACKING_ID,
+                // Random Client Identifier. Ideally, this should be a UUID that
+                // is associated with particular user, device, or browser instance.
+                cid: crypto.randomBytes(16).toString("hex"),
+                // Event hit type.
+                t: 'event',
+                // Event category.
+                ec: category,
+                // Event action.
+                ea: action,
+                // Event label.
+                el: label,
+                // Event value.
+                ev: value,
+                // Custom Dimension
+                cd1: dimension,
+                // Custom Metric
+                cm1: metric
+            },
+        headers:
+            {  'Cache-Control': 'no-cache' } };
+
+    return rp(options);
+}
+
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
             console.log(req.body);
@@ -122,6 +157,10 @@ router.route('/movies/:movieId')
                             return res.status(400).json({ success: false, message: "Movie not found." });
                         }
                     });
+                trackDimension(movie.genre, '/movies/:movieId?reviews=true', 'GET Movie', '1', movie.title, '1')
+                    .then(function (response) {
+                        console.log(response.body);
+                    })
             }else{
                 var id = req.params.movieId;
                 Movie.findById(id).select("title year genre actors").exec(function(err, movie) {
@@ -132,6 +171,10 @@ router.route('/movies/:movieId')
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
                 });
+                trackDimension(movie.genre, '/movies/:movieId', 'GET Movie', '1', movie.title, '1')
+                    .then(function (response) {
+                        console.log(response.body);
+                    })
             }
         }
     })
@@ -150,12 +193,20 @@ router.route('/movies')
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
                 });
+            trackDimension(movie.genre, '/movies/?reviews=true', 'GET Movies', '1', movie.title, '1')
+                .then(function (response) {
+                    console.log(response.body);
+                })
         }else{
             Movie.find(function (err, movies) {
                 if (err) res.send(err);
                 // return the users
                 res.json(movies).status(200).end();
             });
+            trackDimension(movie.genre, '/movies/', 'GET Movies', '1', movie.title, '1')
+                .then(function (response) {
+                    console.log(response.body);
+                })
         }
     })
     .post(authJwtController.isAuthenticated, function(req, res) {
@@ -279,6 +330,10 @@ router.route('/reviews')
                         }
                     }
                     res.status(200).send({ success: true, message: "Added review." });
+                    trackDimension(movie.genre, '/reviews', 'POST Reviews', '1', movie.title, '1')
+                        .then(function (response) {
+                            console.log(response.body);
+                        })
                 });
             });
         });
