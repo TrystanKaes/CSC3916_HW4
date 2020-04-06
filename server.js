@@ -45,7 +45,7 @@ function trackDimension(category, action, label, value, dimension, metric) {
                 // Event label.
                 el: label,
                 // Event value.
-                ev: 1,
+                ev: value,
                 // Custom Dimension
                 cd1: dimension,
                 // Custom Metric
@@ -159,7 +159,7 @@ router.route('/movies/:movieId')
                         }else{
                             return res.status(400).json({ success: false, message: "Movie not found." });
                         }
-                        trackDimension(movie.genre, '/movies/:movieId?reviews=true', 'GET Movie', '1', movie.title, "Requested: Value 1")
+                        trackDimension(movie.genre, '/movies/:movieId?reviews=true', 'GET Movie', '1', movie.title, "1")
                             .then(function (response) {
                                 console.log(response.body);
                             })
@@ -174,7 +174,7 @@ router.route('/movies/:movieId')
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
-                    trackDimension(movie.genre, '/movies/:movieId', 'GET Movie', '1', movie.title, "Requested: Value 1")
+                    trackDimension(movie.genre, '/movies/:movieId', 'GET Movie', '1', movie.title, "1")
                         .then(function (response) {
                             console.log(response.body);
                         })
@@ -197,7 +197,7 @@ router.route('/movies')
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
-                    trackDimension("ALL", '/movies/?reviews=true', 'GET Movies', '1', "ALL MOVIES", "Requested: Value 1")
+                    trackDimension("ALL", '/movies/?reviews=true', 'GET Movies', '1', "ALL MOVIES", "1")
                         .then(function (response) {
                             console.log(response.body);
                         })
