@@ -14,8 +14,8 @@ var ReviewSchema = new Schema({
     username: { type: String, required: false },
     movie_id: { type: Schema.Types.ObjectId, ref: "MovieSchema" },
     quote: { type: String, required: true },
-    rating: { type: Number, min: 1, max: 5 }
-
+    rating: { type: Number, min: 1, max: 5 },
+    image: {type: String}
 });
 
 ReviewSchema.index({

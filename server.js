@@ -215,26 +215,27 @@ router.route('/movies')
         }
     })
     .post(authJwtController.isAuthenticated, function(req, res) {
-        if (!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors) {
-            res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'}).status(400);
-        }
-        else {
+        if (!(!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors)) {
             var movie = new Movie();
             movie.title = req.body.title;
             movie.yearReleased = req.body.yearReleased;
             movie.genre = req.body.genre;
             movie.actors = req.body.actors;
-            // save the user
+            if(req.body.image) movie.image = req.body.image;
+
+            // save the movie
             if (Movie.findOne({title: movie.title}) != null) {
                 movie.save(function (err) {
                     if (err) {
                         if (err.code == 11000)
                             res.json({success: false, message: 'That movie already exists. '});
                         else
-                        return res.send(err);
-                    }else res.json({success: true, message: 'Movie uploaded!'});
+                            return res.send(err);
+                    } else res.json({success: true, message: 'Movie uploaded!'});
                 });
             }
+        } else {
+            res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'}).status(400);
         }
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
