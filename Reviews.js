@@ -15,7 +15,7 @@ var ReviewSchema = new Schema({
     movie_id: { type: Schema.Types.ObjectId, ref: "MovieSchema" },
     quote: { type: String, required: true },
     rating: { type: Number, min: 1, max: 5 },
-    image: {type: String}
+    image: {type: String, default: "https://image.shutterstock.com/image-illustration/missing-poster-600w-1396974.jpg" }
 });
 
 ReviewSchema.index({
