@@ -196,7 +196,7 @@ router.route('/movies')
                             for (let i = 0; i < movie.length; i++) {
 
                                 let sum = 0;
-                                console.log(movie[0].reviews[0].quote);
+                                console.log(json(movie[0].reviews[0]));
                                 for (let j = 0; j < movie[j].reviews.length; j++){
                                     sum += movie[j].reviews[i].rating;
                                 }
