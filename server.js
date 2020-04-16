@@ -154,17 +154,19 @@ router.route('/movies/:movieId')
                     .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
-                            if (movie) {
-                                    let sum = 0;
-                                    for (let j = 0; j < movie.reviews.length; j++) {
-                                        sum += movie.reviews[j].rating;
-                                    }
-                                    let average = (sum/movie.reviews.length).toFixed(1);
+                        if (movie && movie.length > 0) {
+                            for (let i = 0; i < movie.length; i++) {
+                                let sum = 0;
+                                for (let j = 0; j < movie[i].reviews.length; j++) {
+                                    sum += movie[i].reviews[j].rating;
+                                }
+                                let average = (sum/movie[i].reviews.length).toFixed(1);
 
-                                    if (movie.reviews.length > 0) {
-                                        movie = Object.assign({}, movie,
-                                            {avgRating: average});
-                                    }
+                                if (movie[i].reviews.length > 0) {
+                                    movie[i] = Object.assign({}, movie[i],
+                                        {avgRating: average});
+                                }
+                            }
                             return res.status(200).json(movie);
                         }else{
                             return res.status(400).json({ success: false, message: "Movie not found." });
