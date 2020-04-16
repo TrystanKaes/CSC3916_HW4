@@ -192,26 +192,22 @@ router.route('/movies')
                 .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
                 .exec(function (err, movie) {
                     if (err) return res.send(err);
-                    if (movie && movie.length > 0) {
-                        console.log(JSON.stringify(movie));
-                            for (let i = 0; i < movie.length; i++) {
-
-                                let sum = 0;
-
-                                for (let j = 0; j < movie[j].reviews.length; j++){
-                                    sum += movie[j].reviews[i].rating;
-                                }
-
-                                if (movie[i].reviews.length > 0) {
-                                    movie[i] = Object.assign({}, movie[i], {
-                                        avgRating: (sum/movie[i].reviews.length)
-                                    });
-                                }
+                    if (movie) {
+                        // Add avgRating
+                        for (let j = 0; j < movie.length; j++) {
+                            let total = 0;
+                            for (let i = 0; i < movie[j].reviews.length; i++) {
+                                total += movie[j].reviews[i].rating;
                             }
-
-                            movie.sort((a,b) => {
-                                return a.avgRating - b.avgRating;
-                            });
+                            if (movie[j].reviews.length > 0) {
+                                movie[j] = Object.assign({}, movie[j],
+                                    {avgRating: (total/movie[j].reviews.length).toFixed(1)});
+                            }
+                        }
+                        movie.sort((a,b) => {
+                            return b.avgRating - a.avgRating;
+                        });
+                        //console.log(JSON.stringify(movie));
                         return res.status(200).json(movie);
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
