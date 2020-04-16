@@ -155,7 +155,7 @@ router.route('/movies/:movieId')
                     .exec(function (err, movie) {
                         if (err) return res.send(err);
                         if (movie && movie.length > 0) {
-                            return res.status(200).json({ success: true, result: movie });
+                            return res.status(200).json(movie);
                         }else{
                             return res.status(400).json({ success: false, message: "Movie not found." });
                         }
@@ -193,7 +193,7 @@ router.route('/movies')
                 .exec(function (err, movie) {
                     if (err) return res.send(err);
                     if (movie && movie.length > 0) {
-                        return res.status(200).json({ success: true, result: movie });
+                        return res.status(200).json(movie);
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
                     }
