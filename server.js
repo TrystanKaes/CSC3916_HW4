@@ -193,10 +193,11 @@ router.route('/movies')
                 .exec(function (err, movie) {
                     if (err) return res.send(err);
                     if (movie && movie.length > 0) {
+                        console.log(JSON.stringify(movie));
                             for (let i = 0; i < movie.length; i++) {
 
                                 let sum = 0;
-                                console.log(json(movie[0]));
+
                                 for (let j = 0; j < movie[j].reviews.length; j++){
                                     sum += movie[j].reviews[i].rating;
                                 }
