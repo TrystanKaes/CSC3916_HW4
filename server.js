@@ -193,6 +193,19 @@ router.route('/movies')
                 .exec(function (err, movie) {
                     if (err) return res.send(err);
                     if (movie && movie.length > 0) {
+                            for (let i = 0; i < movie.length; i++) {
+                                let sum = 0;
+                                for (let j = 0; j < movie[j].reviews.length; j++) {
+                                    sum += movie[j].reviews[i].rating;
+                                }
+                                if (movie[i].reviews.length > 0) {
+                                    movie[i] = Object.assign({}, movie[i],
+                                        {avgRating: (total/movie[i].reviews.length).toFixed(1)});
+                                }
+                            }
+                            movie.sort((a,b) => {
+                                return a.avgRating - b.avgRating;
+                            });
                         return res.status(200).json(movie);
                     }else{
                         return res.status(400).json({ success: false, message: "Movie not found." });
