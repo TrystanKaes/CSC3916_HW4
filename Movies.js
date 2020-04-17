@@ -17,7 +17,8 @@ var MovieSchema = new Schema({
         required: true,
         enum: ["Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror", "Mystery", "Thriller", "Western"]
     },
-    actors: {type: [String], required: true, validate: [arrayLimit, '{PATH} array must be of size 3']}
+    actors: {type: [String], required: true, validate: [arrayLimit, '{PATH} array must be of size 3']},
+    image: {type: String, default: "https://static.thenounproject.com/png/82078-200.png"}
 });
 
 function arrayLimit(val) {
