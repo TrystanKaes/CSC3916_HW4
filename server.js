@@ -337,6 +337,7 @@ router.route('/reviews')
     .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body || !req.body.movieId || !req.body.quote || !req.body.rating)
             return res.json({success: false, message: 'Please pass MovieId, quote, and rating'}).status(400);
+        console.log(JSON.stringify(req.body))
         Movie.findById(req.body.movieId, function(err, movie) {
             if (err) return res.status(400).json(err);
             if (!movie || movie.length <= 0)
